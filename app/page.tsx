@@ -17,7 +17,7 @@ export default async function LandingPage() {
             src="/hero.jpg"
             alt="Yoga instructor in a pose"
             fill
-            className="object-cover [object-position:center_-100px]"
+            className="object-cover [object-position:center_-200px]"
             priority
           />
           <div className="absolute inset-0 bg-primary/40" />
