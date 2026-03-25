@@ -17,7 +17,7 @@ export default async function LandingPage() {
             src="/hero.jpg"
             alt="Yoga instructor in a pose"
             fill
-            className="object-cover object-center"
+            className="object-cover [object-position:center_-50px]"
             priority
           />
           <div className="absolute inset-0 bg-primary/40" />
@@ -77,7 +77,7 @@ export default async function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
               <Image
-                src="/hero3.JPG"
+                src="/hero3.jpg"
                 alt="Lisa, founder of Elevate + Embody"
                 fill
                 className="object-cover object-top"
