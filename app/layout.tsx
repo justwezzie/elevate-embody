@@ -42,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <ClerkProvider>
       <html lang="en" className={`${lustria.variable} ${mulish.variable} h-full antialiased`}>
         {colorOverrides && (
-          <style>{`:root { ${colorOverrides} }`}</style>
+          <style precedence="default" href="site-config-colors">{`:root { ${colorOverrides} }`}</style>
         )}
         <body className="min-h-full flex flex-col bg-background text-foreground">
           {children}
