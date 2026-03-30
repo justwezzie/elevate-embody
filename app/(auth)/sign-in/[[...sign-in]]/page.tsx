@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { SignIn } from '@clerk/nextjs'
 import { X } from 'lucide-react'
+import { AuthForm } from '@/components/auth/AuthForm'
 
 export default function SignInPage() {
   return (
@@ -12,7 +12,7 @@ export default function SignInPage() {
       >
         <X className="w-5 h-5" />
       </Link>
-      <SignIn />
+      <AuthForm mode="sign-in" />
     </div>
   )
 }

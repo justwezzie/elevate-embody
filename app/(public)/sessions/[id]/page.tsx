@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useAuth } from '@clerk/nextjs'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SpotsRemaining } from '@/components/shared/SpotsRemaining'
+import { useSupabaseUser } from '@/hooks/useSupabaseUser'
 import type { DbSession } from '@/types'
 
 export default function SessionDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const { isSignedIn, isLoaded } = useAuth()
+  const { isSignedIn, isLoaded } = useSupabaseUser()
   const [session, setSession] = useState<DbSession | null>(null)
   const [isBooking, setIsBooking] = useState(false)
 
@@ -102,6 +102,10 @@ export default function SessionDetailPage() {
           <div>
             <p className="text-muted-foreground">Duration</p>
             <p className="font-medium">{session.duration_mins} minutes</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground">Address</p>
+            <p className="font-medium">{session.address ?? 'Address shared after booking'}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Availability</p>

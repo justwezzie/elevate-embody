@@ -26,6 +26,7 @@ create table public.sessions (
   title           text not null,
   type            text not null check (type in ('yoga', 'boxing')),
   description     text,
+  address         text,
   instructor_name text not null,
   datetime        timestamptz not null,
   duration_mins   integer not null default 60,
@@ -36,6 +37,13 @@ create table public.sessions (
   created_at      timestamptz not null default now(),
   updated_at      timestamptz not null default now(),
   constraint spots_within_capacity check (spots_remaining >= 0 and spots_remaining <= capacity)
+);
+
+create table public.saved_addresses (
+  id         uuid primary key default uuid_generate_v4(),
+  address    text not null unique,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 create table public.bookings (
@@ -112,12 +120,17 @@ create trigger trg_users_updated_at
   before update on public.users
   for each row execute function public.handle_updated_at();
 
+create trigger trg_saved_addresses_updated_at
+  before update on public.saved_addresses
+  for each row execute function public.handle_updated_at();
+
 -- ============================================================
 -- ROW LEVEL SECURITY
 -- ============================================================
 
 alter table public.users    enable row level security;
 alter table public.sessions enable row level security;
+alter table public.saved_addresses enable row level security;
 alter table public.bookings enable row level security;
 
 -- Helper: extract clerk_id from JWT sub claim (set by Clerk JWT template)
@@ -173,9 +186,11 @@ alter publication supabase_realtime add table public.sessions;
 -- Dashboard → JWT Templates → New template named "supabase"
 -- Template body:
 -- {
---   "sub": "{{user.id}}",
---   "metadata": "{{user.public_metadata}}"
+--   "role": "{{user.public_metadata.role}}"
 -- }
+-- Note: Clerk adds reserved claims like `sub` automatically, so do not
+-- include them manually in the template body. Using a top-level `role`
+-- claim keeps the token small and avoids depending on nested metadata.
 -- ============================================================
 
 -- ============================================================

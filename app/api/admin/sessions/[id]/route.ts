@@ -1,4 +1,4 @@
-import { requireAdmin } from '@/lib/clerk/roles'
+import { requireAdmin } from '@/lib/auth'
 import { createServiceClient } from '@/lib/supabase/server'
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -29,7 +29,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const { id } = await params
   const body = await req.json()
-  const { title, type, description, instructor_name, datetime, duration_mins, capacity, price_cents, is_published } = body
+  const { title, type, description, address, instructor_name, datetime, duration_mins, capacity, price_cents, is_published } = body
 
   const supabase = createServiceClient()
   const { data, error } = await supabase
@@ -38,6 +38,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       title,
       type,
       description: description || null,
+      address: address || null,
       instructor_name,
       datetime,
       duration_mins,

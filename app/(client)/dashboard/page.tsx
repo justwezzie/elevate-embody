@@ -1,27 +1,20 @@
-import { auth } from '@clerk/nextjs/server'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { getCurrentAppUser } from '@/lib/auth'
 import { createServiceClient } from '@/lib/supabase/server'
 import { BookingCard } from '@/components/bookings/BookingCard'
 import type { BookingWithSession } from '@/types'
 
 export default async function DashboardPage() {
-  const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  const currentUser = await getCurrentAppUser()
+  if (!currentUser) redirect('/sign-in')
 
   const supabase = createServiceClient()
-
-  const { data: user } = await supabase
-    .from('users')
-    .select('id')
-    .eq('clerk_id', userId)
-    .single()
-
-  if (!user) redirect('/sign-in')
 
   const { data: bookings } = await supabase
     .from('bookings')
     .select('*, sessions(*)')
-    .eq('user_id', user.id)
+    .eq('user_id', currentUser.appUser.id)
     .neq('status', 'pending')
     .order('created_at', { ascending: false })
 
@@ -41,7 +34,12 @@ export default async function DashboardPage() {
       <section className="mb-10">
         <h2 className="text-lg font-semibold mb-4">Upcoming</h2>
         {upcoming.length === 0 ? (
-          <p className="text-muted-foreground text-sm">No upcoming bookings. <a href="/sessions" className="text-accent underline underline-offset-2">Browse sessions →</a></p>
+          <p className="text-muted-foreground text-sm">
+            No upcoming bookings.{' '}
+            <Link href="/sessions" className="text-accent underline underline-offset-2">
+              Browse sessions →
+            </Link>
+          </p>
         ) : (
           <div className="space-y-4">
             {upcoming.map((booking: BookingWithSession) => (

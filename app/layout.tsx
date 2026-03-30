@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Lustria, Mulish } from 'next/font/google'
-import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from '@/components/ui/sonner'
 import { createAnonClient } from '@/lib/supabase/server'
 import './globals.css'
@@ -39,16 +38,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     .join(' ')
 
   return (
-    <ClerkProvider>
-      <html lang="en" className={`${lustria.variable} ${mulish.variable} h-full antialiased`}>
-        {colorOverrides && (
-          <style precedence="default" href="site-config-colors">{`:root { ${colorOverrides} }`}</style>
-        )}
-        <body className="min-h-full flex flex-col bg-background text-foreground">
-          {children}
-          <Toaster richColors position="top-right" />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" className={`${lustria.variable} ${mulish.variable} h-full antialiased`}>
+      {colorOverrides && (
+        <style precedence="default" href="site-config-colors">{`:root { ${colorOverrides} }`}</style>
+      )}
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        {children}
+        <Toaster richColors position="top-right" />
+      </body>
+    </html>
   )
 }

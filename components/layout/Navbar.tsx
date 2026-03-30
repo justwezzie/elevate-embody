@@ -1,13 +1,14 @@
 import Link from 'next/link'
-import { auth, currentUser } from '@clerk/nextjs/server'
-import { UserButton } from '@clerk/nextjs'
 import { buttonVariants } from '@/lib/button-variants'
+import { getCurrentAppUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
+import { SignOutButton } from './SignOutButton'
 
 export async function Navbar() {
-  const { userId } = await auth()
-  const user = userId ? await currentUser() : null
-  const isAdmin = (user?.publicMetadata as { role?: string })?.role === 'admin'
+  const currentUser = await getCurrentAppUser()
+  const user = currentUser?.authUser ?? null
+  const appUser = currentUser?.appUser ?? null
+  const isAdmin = appUser?.role === 'admin'
 
   return (
     <header className="border-b border-border bg-white/80 backdrop-blur-sm sticky top-0 z-50">
@@ -20,7 +21,7 @@ export async function Navbar() {
           <Link href="/sessions" className="hover:text-foreground transition-colors">
             Sessions
           </Link>
-          {userId && (
+          {user && (
             <Link href="/dashboard" className="hover:text-foreground transition-colors">
               My Bookings
             </Link>
@@ -33,14 +34,17 @@ export async function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          {!userId ? (
-            <>
-<Link href="/sign-up" className={cn(buttonVariants({ size: 'sm' }), 'h-[40px] px-4 bg-accent hover:bg-accent/90 text-accent-foreground')}>
-                Book a class
-              </Link>
-            </>
+          {!user ? (
+            <Link href="/sign-up" className={cn(buttonVariants({ size: 'sm' }), 'h-[40px] px-4 bg-accent hover:bg-accent/90 text-accent-foreground')}>
+              Book a class
+            </Link>
           ) : (
-            <UserButton />
+            <div className="flex items-center gap-3">
+              <span className="hidden sm:block text-sm text-muted-foreground">
+                {appUser?.full_name ?? user.email}
+              </span>
+              <SignOutButton />
+            </div>
           )}
         </div>
       </div>

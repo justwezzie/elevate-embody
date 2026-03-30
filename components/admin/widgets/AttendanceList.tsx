@@ -5,6 +5,7 @@ import { Title } from 'react-admin'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
+import { useMediaQuery, useTheme } from '@mui/material'
 import { getSupabaseClient } from '../dataProvider'
 
 interface Attendee {
@@ -22,6 +23,8 @@ interface SessionWithAttendees {
 }
 
 export function AttendanceList() {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [sessions, setSessions] = useState<SessionWithAttendees[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -57,6 +60,8 @@ export function AttendanceList() {
           }
         })
         setSessions(mapped)
+      } catch {
+        setSessions([])
       } finally {
         setLoading(false)
       }
@@ -78,16 +83,30 @@ export function AttendanceList() {
     <Card>
       <Title title="" />
       <CardHeader title="Upcoming Attendance" />
-      <CardContent>
+      <CardContent sx={{ padding: isMobile ? 2 : 3 }}>
         {loading ? (
           <p style={{ color: '#6b7280' }}>Loading...</p>
         ) : sessions.length === 0 ? (
           <p style={{ color: '#6b7280' }}>No upcoming sessions.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {sessions.map((session) => (
-              <div key={session.id}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            {sessions.map((session, index) => (
+              <div
+                key={session.id}
+                style={{
+                  paddingBottom: '1rem',
+                  borderBottom: index === sessions.length - 1 ? 'none' : '1px solid #d7e1db',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: isMobile ? 'flex-start' : 'center',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    gap: '0.5rem',
+                    marginBottom: '0.5rem',
+                  }}
+                >
                   <strong style={{ fontSize: '0.95rem' }}>{session.title}</strong>
                   <span
                     style={{
@@ -101,14 +120,30 @@ export function AttendanceList() {
                   >
                     {session.type}
                   </span>
-                  <span style={{ fontSize: '0.8rem', color: '#6b7280', marginLeft: 'auto' }}>
+                  <span
+                    style={{
+                      fontSize: '0.8rem',
+                      color: '#6b7280',
+                      marginLeft: isMobile ? 0 : 'auto',
+                    }}
+                  >
                     {formatDate(session.datetime)}
                   </span>
                 </div>
                 {session.attendees.length === 0 ? (
-                  <p style={{ fontSize: '0.85rem', color: '#9ca3af', paddingLeft: '0.5rem' }}>No confirmed bookings yet</p>
+                  <p style={{ fontSize: '0.85rem', color: '#9ca3af', paddingLeft: isMobile ? 0 : '0.5rem' }}>
+                    No confirmed bookings yet
+                  </p>
                 ) : (
-                  <ul style={{ paddingLeft: '1rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  <ul
+                    style={{
+                      paddingLeft: isMobile ? '0.75rem' : '1rem',
+                      margin: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.25rem',
+                    }}
+                  >
                     {session.attendees.map((a) => (
                       <li key={a.id} style={{ fontSize: '0.85rem', color: '#374151' }}>
                         {a.full_name ?? '—'}{' '}

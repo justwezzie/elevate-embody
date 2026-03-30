@@ -1,6 +1,6 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -20,6 +20,7 @@ const schema = z.object({
   title: z.string().min(2, 'Title is required'),
   type: z.enum(['yoga', 'boxing']),
   description: z.string().optional(),
+  address: z.string().optional(),
   instructor_name: z.string().min(2, 'Instructor name is required'),
   datetime: z.string().min(1, 'Date and time are required'),
   duration_mins: z.coerce.number().min(15).max(180),
@@ -41,7 +42,7 @@ export function SessionForm({ session, onSubmit, isSubmitting }: Props) {
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema) as import('react-hook-form').Resolver<FormValues>,
@@ -50,6 +51,7 @@ export function SessionForm({ session, onSubmit, isSubmitting }: Props) {
           title: session.title,
           type: session.type,
           description: session.description ?? '',
+          address: session.address ?? '',
           instructor_name: session.instructor_name,
           datetime: new Date(session.datetime).toISOString().slice(0, 16),
           duration_mins: session.duration_mins,
@@ -64,6 +66,7 @@ export function SessionForm({ session, onSubmit, isSubmitting }: Props) {
           is_published: true,
         },
   })
+  const sessionType = useWatch({ control, name: 'type' })
 
   async function handleFormSubmit(values: FormValues) {
     await onSubmit({ ...values, price_cents: Math.round(values.price_pounds * 100) })
@@ -80,7 +83,7 @@ export function SessionForm({ session, onSubmit, isSubmitting }: Props) {
       <div className="space-y-1">
         <Label>Type</Label>
         <Select
-          defaultValue={watch('type')}
+          value={sessionType}
           onValueChange={(v) => setValue('type', v as 'yoga' | 'boxing')}
         >
           <SelectTrigger>
@@ -136,6 +139,11 @@ export function SessionForm({ session, onSubmit, isSubmitting }: Props) {
       <div className="space-y-1">
         <Label htmlFor="description">Description (optional)</Label>
         <Textarea id="description" rows={3} {...register('description')} />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="address">Address</Label>
+        <Input id="address" {...register('address')} />
       </div>
 
       <div className="flex items-center gap-2">

@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe/client'

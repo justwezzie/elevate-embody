@@ -1,14 +1,19 @@
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
-import { auth } from '@clerk/nextjs/server'
+import { requireAppUser } from '@/lib/auth'
 import { createServiceClient } from '@/lib/supabase/server'
 import { stripe } from '@/lib/stripe/client'
 import { sendBookingCancellation } from '@/lib/resend/client'
 import type { BookingWithRelations } from '@/types'
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { userId } = await auth()
-  if (!userId) return new Response('Unauthorized', { status: 401 })
+  let currentUser
+  try {
+    currentUser = await requireAppUser()
+  } catch {
+    return new Response('Unauthorized', { status: 401 })
+  }
 
   const { id } = await params
   const supabase = createServiceClient()
@@ -20,7 +25,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     .single()
 
   if (!booking) return Response.json({ error: 'Not found' }, { status: 404 })
-  if (booking.users.clerk_id !== userId) return new Response('Forbidden', { status: 403 })
+  if (booking.users.clerk_id !== currentUser.authUser.id) return new Response('Forbidden', { status: 403 })
   if (booking.status !== 'confirmed') {
     return Response.json({ error: 'Booking is not cancellable' }, { status: 400 })
   }

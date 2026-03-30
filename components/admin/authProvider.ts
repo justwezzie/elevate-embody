@@ -1,40 +1,22 @@
 import type { AuthProvider } from 'react-admin'
-
-type ClerkWindow = typeof window & {
-  Clerk?: {
-    session?: {
-      getToken: (opts: { template: string }) => Promise<string | null>
-    }
-    user?: {
-      id: string
-      fullName: string | null
-      imageUrl: string
-      emailAddresses?: Array<{ emailAddress: string }>
-    }
-    signOut: () => Promise<void>
-  }
-}
-
-async function getClerkToken(): Promise<string | null> {
-  const clerk = (window as ClerkWindow).Clerk
-  if (!clerk?.session) return null
-  return clerk.session.getToken({ template: 'supabase' })
-}
+import { createClient } from '@/lib/supabase/client'
 
 export const authProvider: AuthProvider = {
   async login() {
-    // Clerk handles login — this is never called since loginPage={false}
+    window.location.href = '/sign-in'
     return
   },
 
   async logout() {
-    const clerk = (window as ClerkWindow).Clerk
-    if (clerk?.signOut) await clerk.signOut()
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = '/sign-in'
   },
 
   async checkAuth() {
-    const token = await getClerkToken()
-    if (!token) {
+    const supabase = createClient()
+    const { data } = await supabase.auth.getSession()
+    if (!data.session) {
       window.location.href = '/sign-in'
       throw new Error('Session expired')
     }
@@ -46,17 +28,30 @@ export const authProvider: AuthProvider = {
   },
 
   async getIdentity() {
-    const clerk = (window as ClerkWindow).Clerk
-    const user = clerk?.user
+    const supabase = createClient()
+    const { data } = await supabase.auth.getUser()
+    const user = data.user
     if (!user) return { id: 'unknown', fullName: 'Admin' }
     return {
       id: user.id,
-      fullName: user.fullName ?? user.emailAddresses?.[0]?.emailAddress ?? 'Admin',
-      avatar: user.imageUrl,
+      fullName:
+        (typeof user.user_metadata.full_name === 'string' && user.user_metadata.full_name) ||
+        user.email ||
+        'Admin',
     }
   },
 
   async getPermissions() {
-    return 'admin'
+    const supabase = createClient()
+    const { data: userData } = await supabase.auth.getUser()
+    if (!userData.user) return 'client'
+
+    const { data } = await supabase
+      .from('users')
+      .select('role')
+      .eq('clerk_id', userData.user.id)
+      .maybeSingle()
+
+    return data?.role ?? 'client'
   },
 }

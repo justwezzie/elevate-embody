@@ -1,17 +1,24 @@
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
-import { auth } from '@clerk/nextjs/server'
 import { stripe } from '@/lib/stripe/client'
+import { requireAppUser } from '@/lib/auth'
+import { getAppUrl } from '@/lib/app-url'
 import { createServiceClient } from '@/lib/supabase/server'
 
 export async function POST(req: Request) {
-  const { userId } = await auth()
-  if (!userId) return new Response('Unauthorized', { status: 401 })
+  let currentUser
+  try {
+    currentUser = await requireAppUser()
+  } catch {
+    return new Response('Unauthorized', { status: 401 })
+  }
 
   const { sessionId } = await req.json()
   if (!sessionId) return Response.json({ error: 'sessionId required' }, { status: 400 })
 
   const supabase = createServiceClient()
+  const appUrl = getAppUrl()
 
   const { data: yogaSession } = await supabase
     .from('sessions')
@@ -27,18 +34,10 @@ export async function POST(req: Request) {
     return Response.json({ error: 'Session is fully booked' }, { status: 409 })
   }
 
-  const { data: user } = await supabase
-    .from('users')
-    .select('id, email')
-    .eq('clerk_id', userId)
-    .single()
-
-  if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
-
   const { data: booking, error } = await supabase
     .from('bookings')
     .upsert(
-      { user_id: user.id, session_id: sessionId, status: 'pending' },
+      { user_id: currentUser.appUser.id, session_id: sessionId, status: 'pending' },
       { onConflict: 'user_id,session_id', ignoreDuplicates: false }
     )
     .select()
@@ -49,7 +48,7 @@ export async function POST(req: Request) {
   const checkoutSession = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     mode: 'payment',
-    customer_email: user.email,
+    customer_email: currentUser.appUser.email,
     line_items: [
       {
         price_data: {
@@ -63,10 +62,10 @@ export async function POST(req: Request) {
     metadata: {
       booking_id: booking.id,
       session_id: sessionId,
-      user_id: user.id,
+      user_id: currentUser.appUser.id,
     },
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/booking/success?booking_id=${booking.id}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/booking/cancel?booking_id=${booking.id}`,
+    success_url: `${appUrl}/booking/success?booking_id=${booking.id}`,
+    cancel_url: `${appUrl}/booking/cancel?booking_id=${booking.id}`,
   })
 
   await supabase

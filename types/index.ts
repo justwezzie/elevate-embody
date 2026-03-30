@@ -18,6 +18,7 @@ export interface DbSession {
   title: string
   type: SessionType
   description: string | null
+  address: string | null
   instructor_name: string
   datetime: string
   duration_mins: number

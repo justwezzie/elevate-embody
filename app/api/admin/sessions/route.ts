@@ -1,4 +1,4 @@
-import { requireAdmin } from '@/lib/clerk/roles'
+import { requireAdmin } from '@/lib/auth'
 import { createServiceClient } from '@/lib/supabase/server'
 
 export async function POST(req: Request) {
@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json()
-  const { title, type, description, instructor_name, datetime, duration_mins, capacity, price_cents, is_published } = body
+  const { title, type, description, address, instructor_name, datetime, duration_mins, capacity, price_cents, is_published } = body
 
   const supabase = createServiceClient()
   const { data, error } = await supabase
@@ -18,6 +18,7 @@ export async function POST(req: Request) {
       title,
       type,
       description: description || null,
+      address: address || null,
       instructor_name,
       datetime,
       duration_mins,

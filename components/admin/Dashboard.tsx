@@ -1,22 +1,23 @@
 'use client'
 
+import { useMediaQuery, useTheme } from '@mui/material'
 import { Title } from 'react-admin'
 import { RevenueCard } from './widgets/RevenueCard'
 import { AttendanceList } from './widgets/AttendanceList'
 
 export function Dashboard() {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
   return (
-    <div style={{ padding: '1.5rem' }}>
+    <div style={{ padding: isMobile ? '1rem' : '1.5rem' }}>
       <Title title="Dashboard" />
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1.5rem', color: '#111827' }}>
-        Dashboard
-      </h1>
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: '1rem',
-          marginBottom: '2rem',
+          marginBottom: isMobile ? '1.25rem' : '2rem',
         }}
       >
         <RevenueCard period="week" label="Revenue This Week" />

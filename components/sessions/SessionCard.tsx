@@ -49,6 +49,9 @@ export function SessionCard({ session }: Props) {
         {session.description && (
           <p className="text-muted-foreground line-clamp-2">{session.description}</p>
         )}
+        {session.address && (
+          <p className="text-muted-foreground text-sm">{session.address}</p>
+        )}
         <SpotsRemaining
           sessionId={session.id}
           initialSpots={session.spots_remaining}

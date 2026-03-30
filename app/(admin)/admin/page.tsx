@@ -1,9 +1,5 @@
-'use client'
-
-import dynamic from 'next/dynamic'
-
-const AdminApp = dynamic(() => import('@/components/admin/AdminApp'), { ssr: false })
+import AdminPageShell from '@/components/admin/AdminPageShell'
 
 export default function AdminPage() {
-  return <AdminApp />
+  return <AdminPageShell />
 }
