@@ -35,8 +35,7 @@ export const authProvider: AuthProvider = {
   async checkAuth() {
     const token = await getClerkToken()
     if (!token) {
-      const clerk = (window as ClerkWindow).Clerk
-      clerk?.session // triggers redirect via Clerk if session is gone
+      window.location.href = '/sign-in'
       throw new Error('Session expired')
     }
   },
