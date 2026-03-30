@@ -138,6 +138,9 @@ const adminTheme = createTheme({
           marginTop: 0,
           minHeight: '50px',
           borderRadius: 0,
+          '@media (max-width: 900px)': {
+            minHeight: '75px',
+          },
         },
       },
     },
@@ -171,6 +174,10 @@ const adminTheme = createTheme({
           '@media (min-width: 600px)': {
             minHeight: '50px',
             height: '50px',
+          },
+          '@media (max-width: 900px)': {
+            minHeight: '75px',
+            height: '75px',
           },
         },
       },
