@@ -5,8 +5,30 @@ import { Footer } from '@/components/layout/Footer'
 import { buttonVariants } from '@/lib/button-variants'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { createAnonClient } from '@/lib/supabase/server'
+
+async function getSiteConfig(): Promise<Record<string, string>> {
+  try {
+    const supabase = createAnonClient()
+    const { data } = await supabase.from('site_config').select('key, value')
+    if (!data) return {}
+    return Object.fromEntries(data.map((r: { key: string; value: string }) => [r.key, r.value]))
+  } catch {
+    return {}
+  }
+}
 
 export default async function LandingPage() {
+  const cfg = await getSiteConfig()
+
+  const heroBadge      = cfg.hero_badge      ?? 'Yoga & Boxing'
+  const heroHeadline   = cfg.hero_headline   ?? 'Mindful movement.\nPowerful results.'
+  const heroSubline    = cfg.hero_subheadline ?? 'Intimate small-group yoga and boxing sessions at Elevate + Embody. Real technique, real community, real transformation.'
+  const heroImage      = cfg.hero_image      ?? '/hero.jpg'
+  const aboutHeading   = cfg.about_heading   ?? 'Meet Lisa'
+  const aboutBody      = cfg.about_body      ?? 'Lisa is the heart behind Elevate + Embody — a certified yoga instructor and trained boxer who found that the two disciplines together created something transformative.'
+  const aboutPhoto     = cfg.about_photo     ?? '/hero3.jpg'
+
   return (
     <>
       <Navbar />
@@ -14,23 +36,24 @@ export default async function LandingPage() {
         {/* Hero */}
         <section className="relative text-white py-28 px-4 overflow-hidden flex items-center">
           <Image
-            src="/hero.jpg"
+            src={heroImage}
             alt="Yoga instructor in a pose"
             fill
-            className="object-cover [object-position:center_-250px]"
+            className="object-cover object-center md:[object-position:center_-250px]"
             priority
           />
           <div className="absolute inset-0 bg-primary/40" />
           <Badge className="absolute top-10 left-1/2 -translate-x-1/2 bg-transparent text-white text-sm font-bold px-4 border-0 h-[40px] rounded-2xl">
-            Yoga &amp; Boxing
+            {heroBadge}
           </Badge>
           <div className="relative w-full max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tight">
-              Mindful movement.<br />Powerful results.
+            <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tight text-white">
+              {heroHeadline.split('\n').map((line, i) => (
+                <span key={i}>{line}{i < heroHeadline.split('\n').length - 1 && <br />}</span>
+              ))}
             </h1>
             <p className="text-lg text-white max-w-xl mx-auto font-bold">
-              Intimate small-group yoga and boxing sessions at Elevate + Embody. Real technique,
-              real community, real transformation.
+              {heroSubline}
             </p>
             <div className="flex justify-center pt-2">
               <Link
@@ -77,17 +100,15 @@ export default async function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
               <Image
-                src="/hero3.jpg"
+                src={aboutPhoto}
                 alt="Lisa, founder of Elevate + Embody"
                 fill
                 className="object-cover object-top"
               />
             </div>
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-primary">Meet Lisa</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                Lisa is the heart behind Elevate + Embody — a certified yoga instructor and trained boxer who found that the two disciplines together created something transformative.
-              </p>
+              <h2 className="text-3xl font-bold text-primary">{aboutHeading}</h2>
+              <p className="text-muted-foreground leading-relaxed">{aboutBody}</p>
               <p className="text-muted-foreground leading-relaxed">
                 Her philosophy is simple: <span className="text-primary font-semibold">heal your body, heal your life.</span> Through mindful movement, breathwork, and the discipline of boxing, Lisa guides her students toward physical strength and inner balance in equal measure.
               </p>
