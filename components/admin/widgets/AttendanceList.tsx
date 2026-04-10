@@ -113,7 +113,7 @@ export function AttendanceList() {
                       fontSize: '0.75rem',
                       padding: '0.1rem 0.5rem',
                       borderRadius: '4px',
-                      background: session.type === 'boxing' ? '#ea580c' : '#166534',
+                      background: session.type === 'yoga' ? '#BC4E70' : '#457359',
                       color: '#fff',
                       textTransform: 'capitalize',
                     }}

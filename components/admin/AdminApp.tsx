@@ -1,4 +1,4 @@
-'use client'
+np'use client'
 
 import clsx from 'clsx'
 import { Box, Drawer, IconButton, useMediaQuery, useScrollTrigger, type Theme } from '@mui/material'
@@ -25,13 +25,14 @@ import PeopleIcon from '@mui/icons-material/People'
 import { dataProvider } from './dataProvider'
 import { authProvider } from './authProvider'
 import { Dashboard } from './Dashboard'
+import { HelpHomePage, StripeGuidePage, AdminGuidePage } from './help/HelpPages'
 import { AdminMenu } from './AdminMenu'
 import { SessionsList, SessionsCreate, SessionsEdit } from './resources/SessionsResource'
 import { BookingsList } from './resources/BookingsResource'
 import { CustomersList } from './resources/CustomersResource'
 import { SiteConfigEdit } from './resources/SiteConfigResource'
 
-const DRAWER_WIDTH = 240
+const DRAWER_WIDTH = 150
 const CLOSED_DRAWER_WIDTH = 55
 const RIGHT_SIDEBAR_OPEN_CLASS = 'AdminRightSidebar-open'
 const RIGHT_SIDEBAR_CLOSED_CLASS = 'AdminRightSidebar-closed'
@@ -40,11 +41,11 @@ const adminTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#166534',
+      main: '#457359',
       contrastText: '#f7f7f8',
     },
     secondary: {
-      main: '#ea580c',
+      main: '#BC4E70',
       contrastText: '#f7f7f8',
     },
     background: {
@@ -171,6 +172,7 @@ const adminTheme = createTheme({
           paddingBottom: '20px',
           paddingLeft: '20px',
           paddingRight: '20px',
+          marginBottom: '10px',
           '@media (min-width: 600px)': {
             minHeight: '50px',
             height: '50px',
@@ -194,7 +196,7 @@ const adminTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 18,
+          borderRadius: 16,
           boxShadow: '0 10px 30px rgba(14, 34, 27, 0.05)',
           border: '1px solid #d7e1db',
           backgroundImage: 'none',
@@ -218,7 +220,7 @@ const adminTheme = createTheme({
         containedSecondary: {
           backgroundColor: '#ea580c',
           '&:hover': {
-            backgroundColor: '#c44908',
+            backgroundColor: '#d4607f',
             boxShadow: 'none',
           },
         },
@@ -612,6 +614,9 @@ export default function AdminApp() {
       />
       <CustomRoutes>
         <Route path="/site-config" element={<SiteConfigEdit />} />
+        <Route path="/help" element={<HelpHomePage />} />
+        <Route path="/help/stripe" element={<StripeGuidePage />} />
+        <Route path="/help/admin" element={<AdminGuidePage />} />
       </CustomRoutes>
     </Admin>
   )

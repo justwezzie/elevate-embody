@@ -26,6 +26,7 @@ Recommended:
 
 ```env
 NEXT_PUBLIC_APP_URL=https://your-site.netlify.app
+INDEXNOW_KEY=your-generated-indexnow-key
 ```
 
 Notes:
@@ -34,3 +35,6 @@ Notes:
 - Stripe webhook endpoint should be:
   `https://your-site.netlify.app/api/webhooks/stripe`
 - Stripe checkout, refunds, and webhook handlers are pinned to the Node runtime for Netlify compatibility.
+- IndexNow verification key is served from:
+  `https://your-site.netlify.app/indexnow-key.txt`
+- When `INDEXNOW_KEY` is set, creating, updating, or deleting a session in admin will submit the homepage, sessions index, and session detail URL to IndexNow automatically.

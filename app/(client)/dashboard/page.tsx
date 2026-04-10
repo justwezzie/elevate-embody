@@ -11,12 +11,24 @@ export default async function DashboardPage() {
 
   const supabase = createServiceClient()
 
-  const { data: bookings } = await supabase
+  const { data: bookings, error: bookingsError } = await supabase
     .from('bookings')
     .select('*, sessions(*)')
     .eq('user_id', currentUser.appUser.id)
     .neq('status', 'pending')
     .order('created_at', { ascending: false })
+
+  if (bookingsError) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-12">
+        <h1 className="text-3xl font-bold text-primary mb-8">My Bookings</h1>
+        <p className="text-muted-foreground text-sm" role="alert">
+          Unable to load your bookings. Please refresh the page or{' '}
+          <a href="/dashboard" className="touch-target text-accent underline underline-offset-2">try again</a>.
+        </p>
+      </div>
+    )
+  }
 
   const now = new Date()
   const upcoming = (bookings ?? []).filter(
@@ -36,7 +48,7 @@ export default async function DashboardPage() {
         {upcoming.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             No upcoming bookings.{' '}
-            <Link href="/sessions" className="text-accent underline underline-offset-2">
+            <Link href="/sessions" className="touch-target text-accent underline underline-offset-2">
               Browse sessions →
             </Link>
           </p>

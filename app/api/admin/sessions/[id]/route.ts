@@ -1,4 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
+import { getSessionIndexNowUrls, submitIndexNowUrls } from '@/lib/indexnow'
 import { createServiceClient } from '@/lib/supabase/server'
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -51,6 +52,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  if (data?.id) {
+    await submitIndexNowUrls(getSessionIndexNowUrls(data.id))
+  }
+
   return Response.json({ session: data })
 }
 
@@ -66,5 +72,8 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
   const { error } = await supabase.from('sessions').delete().eq('id', id)
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  await submitIndexNowUrls(getSessionIndexNowUrls(id))
+
   return new Response(null, { status: 204 })
 }

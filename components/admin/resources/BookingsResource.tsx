@@ -5,12 +5,14 @@ import {
   Datagrid,
   TextField,
   DateField,
+  FunctionField,
   SimpleList,
   SelectInput,
   FilterButton,
   TopToolbar,
   NumberField,
 } from 'react-admin'
+import { TypeBadge } from './SessionsResource'
 import { useMediaQuery, useTheme } from '@mui/material'
 
 function BookingListActions() {
@@ -65,7 +67,7 @@ export function BookingsList() {
           <TextField source="customer_email" label="Email" />
           <TextField source="session_title" label="Session" />
           <DateField source="session_datetime" showTime label="Session Date" />
-          <TextField source="session_type" label="Type" />
+          <FunctionField label="Type" render={(record: { session_type?: string }) => <TypeBadge type={record.session_type} />} />
           <NumberField
             source="session_price_cents"
             label="Price"

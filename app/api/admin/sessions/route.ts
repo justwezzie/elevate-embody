@@ -1,4 +1,5 @@
 import { requireAdmin } from '@/lib/auth'
+import { getSessionIndexNowUrls, submitIndexNowUrls } from '@/lib/indexnow'
 import { createServiceClient } from '@/lib/supabase/server'
 
 export async function POST(req: Request) {
@@ -31,5 +32,10 @@ export async function POST(req: Request) {
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  if (data?.id) {
+    await submitIndexNowUrls(getSessionIndexNowUrls(data.id))
+  }
+
   return Response.json({ session: data }, { status: 201 })
 }

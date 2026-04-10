@@ -6,6 +6,13 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "creatovation",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd /Users/wezziembale/creatovation && npm run dev"],
+      "port": 3002,
+      "autoPort": true
     }
   ]
 }

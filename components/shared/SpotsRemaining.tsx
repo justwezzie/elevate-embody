@@ -21,12 +21,14 @@ export function SpotsRemaining({ sessionId, initialSpots, capacity }: Props) {
 
   return (
     <span
+      role="status"
+      aria-live="polite"
       className={`inline-flex items-center gap-1.5 text-sm font-medium ${
-        isLow ? 'text-orange-600' : 'text-muted-foreground'
+        isLow ? 'text-orange-600' : 'text-foreground'
       }`}
     >
       {isLow && (
-        <span className="relative flex h-2 w-2">
+        <span aria-hidden="true" className="relative flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-500" />
         </span>

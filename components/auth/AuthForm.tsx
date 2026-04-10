@@ -129,7 +129,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           </p>
         )}
 
-        <Button type="submit" className="w-full h-10" disabled={isSubmitting}>
+        <Button type="submit" className="w-full h-[44px]" disabled={isSubmitting}>
           {isSubmitting
             ? mode === 'sign-in'
               ? 'Signing in...'
@@ -148,7 +148,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               ? `/sign-up?redirect_url=${encodeURIComponent(redirectTo)}`
               : `/sign-in?redirect_url=${encodeURIComponent(redirectTo)}`
           }
-          className="text-primary underline underline-offset-2"
+          className="touch-target text-primary underline underline-offset-2"
         >
           {mode === 'sign-in' ? 'Sign up' : 'Sign in'}
         </Link>

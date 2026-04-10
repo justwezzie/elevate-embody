@@ -138,10 +138,11 @@ function buildUpdatePayload(resource: string, data: Record<string, unknown>): Re
   if (resource === 'sessions') {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { spots_remaining, save_address, saved_address, ...sessionRest } = rest
-    return {
-      ...sessionRest,
-      address: getNormalizedAddress(rest),
+    const payload: Record<string, unknown> = { ...sessionRest }
+    if ('address' in rest) {
+      payload.address = getNormalizedAddress(rest)
     }
+    return payload
   }
   return rest
 }
@@ -248,9 +249,9 @@ export const dataProvider = {
       await persistSavedAddress(supabase, params.data)
     }
     const payload = buildUpdatePayload(resource, params.data)
-    const { data, error } = await supabase.from(resource).update(payload).eq('id', params.id).select().single()
+    const { data, error } = await supabase.from(resource).update(payload).eq('id', params.id).select().maybeSingle()
     if (error) throw toError(error, `update(${resource})`)
-    return { data: data as unknown as RaRecord }
+    return { data: (data ?? { ...params.data, id: params.id }) as unknown as RaRecord }
   },
 
   updateMany: async (resource: string, params: { ids: (string | number)[]; data: Record<string, unknown> }) => {
@@ -263,9 +264,9 @@ export const dataProvider = {
 
   delete: async (resource: string, params: { id: string | number }) => {
     const supabase = await getSupabaseClient()
-    const { data, error } = await supabase.from(resource).delete().eq('id', params.id).select().single()
+    const { error } = await supabase.from(resource).delete().eq('id', params.id)
     if (error) throw toError(error, `delete(${resource})`)
-    return { data: data as unknown as RaRecord }
+    return { data: { id: params.id } as unknown as RaRecord }
   },
 
   deleteMany: async (resource: string, params: { ids: (string | number)[] }) => {

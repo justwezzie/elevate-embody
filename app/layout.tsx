@@ -1,15 +1,37 @@
 import type { Metadata } from 'next'
 import { Lustria, Mulish } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
+import { getAppUrl } from '@/lib/app-url'
 import { createAnonClient } from '@/lib/supabase/server'
 import './globals.css'
 
 const lustria = Lustria({ variable: '--font-heading', weight: '400', subsets: ['latin'] })
 const mulish = Mulish({ variable: '--font-sans', subsets: ['latin'] })
 
+const appUrl = getAppUrl()
+
 export const metadata: Metadata = {
-  title: 'Elevate + Embody',
+  metadataBase: new URL(appUrl),
+  title: {
+    default: 'Elevate + Embody',
+    template: '%s | Elevate + Embody',
+  },
   description: 'Book yoga and boxing sessions with Elevate + Embody. Mindful movement, powerful results.',
+  alternates: {
+    canonical: appUrl,
+  },
+  openGraph: {
+    type: 'website',
+    url: appUrl,
+    siteName: 'Elevate + Embody',
+    title: 'Elevate + Embody',
+    description: 'Book yoga and boxing sessions with Elevate + Embody. Mindful movement, powerful results.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Elevate + Embody',
+    description: 'Book yoga and boxing sessions with Elevate + Embody. Mindful movement, powerful results.',
+  },
 }
 
 async function getSiteColors(): Promise<{ primary: string | null; accent: string | null }> {

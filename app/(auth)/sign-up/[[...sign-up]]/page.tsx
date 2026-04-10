@@ -7,7 +7,7 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4 relative">
       <Link
         href="/"
-        className="absolute top-6 right-6 p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+        className="touch-target absolute top-6 right-6 w-11 justify-center rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
         aria-label="Close"
       >
         <X className="w-5 h-5" />

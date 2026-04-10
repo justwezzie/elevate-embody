@@ -9,6 +9,7 @@ import {
   NumberField,
   BooleanField,
   DateField,
+  FunctionField,
   Create,
   Edit,
   SimpleForm,
@@ -18,12 +19,34 @@ import {
   BooleanInput,
   DateTimeInput,
   FormDataConsumer,
+  Toolbar,
+  SaveButton,
+  DeleteWithConfirmButton,
   required,
   minValue,
+  useRecordContext,
 } from 'react-admin'
 import { useMediaQuery, useTheme } from '@mui/material'
 import { useFormContext } from 'react-hook-form'
 import { getSupabaseClient } from '../dataProvider'
+
+export function TypeBadge({ type }: { type?: string }) {
+  const isYoga = type === 'yoga'
+  return (
+    <span style={{
+      display: 'inline-block',
+      padding: '2px 10px',
+      borderRadius: '6px',
+      fontSize: '0.75rem',
+      fontWeight: 600,
+      textTransform: 'capitalize',
+      background: isYoga ? '#BC4E70' : '#457359',
+      color: '#fff',
+    }}>
+      {type ?? '—'}
+    </span>
+  )
+}
 
 export function SessionsList() {
   const theme = useTheme()
@@ -48,7 +71,7 @@ export function SessionsList() {
       ) : (
         <Datagrid rowClick="edit" bulkActionButtons={false}>
           <TextField source="title" />
-          <TextField source="type" label="Type" />
+          <FunctionField label="Type" render={(record: { type?: string }) => <TypeBadge type={record.type} />} />
           <DateField source="datetime" showTime label="Date & Time" />
           <NumberField source="capacity" />
           <NumberField source="spots_remaining" label="Spots left" />
@@ -153,13 +176,13 @@ function SessionFormFields() {
         helperText={false}
       />
       <TextInput source="description" multiline rows={4} helperText={false} fullWidth />
-      <SavedAddressFields />
       <TextInput
         source="address"
         label="Address"
-        helperText="Add the class address or location details."
+        helperText="Type the class address or pick a saved one below."
         fullWidth
       />
+      <SavedAddressFields />
       <TextInput
         source="instructor_name"
         validate={required()}
@@ -232,10 +255,27 @@ export function SessionsCreate() {
   )
 }
 
+function SessionEditToolbar() {
+  const record = useRecordContext()
+  return (
+    <Toolbar sx={{ justifyContent: 'space-between' }}>
+      <SaveButton />
+      <DeleteWithConfirmButton
+        confirmTitle={`Delete "${record?.title}"?`}
+        confirmContent="This will permanently remove the session and cannot be undone."
+        confirmColor="warning"
+      />
+    </Toolbar>
+  )
+}
+
 export function SessionsEdit() {
   return (
     <Edit>
-      <SimpleForm sx={{ maxWidth: 720, '& .ra-input': { width: '100%' } }}>
+      <SimpleForm
+        toolbar={<SessionEditToolbar />}
+        sx={{ maxWidth: 720, '& .ra-input': { width: '100%' } }}
+      >
         <SessionFormFields />
         <NumberField
           source="spots_remaining"

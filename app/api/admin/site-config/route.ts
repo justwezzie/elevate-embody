@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/auth'
 import { createServiceClient } from '@/lib/supabase/server'
 
@@ -28,5 +29,6 @@ export async function POST(req: Request) {
     }
   }
 
+  revalidatePath('/', 'layout')
   return Response.json({ ok: true })
 }

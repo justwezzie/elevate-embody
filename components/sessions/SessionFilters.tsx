@@ -26,12 +26,14 @@ export function SessionFilters() {
   }
 
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div role="group" aria-label="Filter sessions by type" className="flex gap-2 flex-wrap">
       {TYPES.map(({ value, label }) => (
         <Button
           key={value}
           variant={current === value ? 'default' : 'outline'}
           size="sm"
+          aria-pressed={current === value}
+          className="h-[44px] px-4"
           onClick={() => setFilter(value)}
         >
           {label}
