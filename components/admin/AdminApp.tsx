@@ -1,4 +1,4 @@
-np'use client'
+'use client'
 
 import clsx from 'clsx'
 import { Box, Drawer, IconButton, useMediaQuery, useScrollTrigger, type Theme } from '@mui/material'
